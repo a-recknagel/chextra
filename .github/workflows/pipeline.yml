@@ -62,6 +62,7 @@ jobs:
             pdm.lock
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: [toolchain]
     environment:
       name: github-pages
@@ -78,12 +79,10 @@ jobs:
         with:
           path: site/
       - name: deploy github pages
-        if: github.ref == 'refs/heads/main'
         id: deployment
         uses: actions/deploy-pages@v2
 
       # publish distribution to pypi
       - uses: pdm-project/setup-pdm@v3
       - name: publish package
-        if: github.ref == 'refs/heads/main'
         run: pdm publish --no-build -u arne -P ${{ secrets.PYPI_PW }}
