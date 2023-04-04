@@ -24,30 +24,31 @@ jobs:
       - uses: pdm-project/setup-pdm@v3
         with:
           python-version: ${{ matrix.python }}
+          enable-pep582: true
       - name: install dependencies
         run: pdm install
 
       # lint
       - name: format imports
-        run: isort src tests --check
+        run: pdm run isort src tests --check
       - name: format code
-        run: black src tests --check
+        run: pdm run black src tests --check
 
       # test
       - name: unit test
-        run: pytest tests
+        run: pdm run pytest tests
       - name: static typing
-        run: mypy src
+        run: pdm run mypy src
 
       # security
       - name: source code vulnerabilities
-        run: bandit -r src
+        run: pdm run bandit -r src
       - name: 3rd party vulnerabilities
-        run: pdm export --prod -f requirements | safety check --stdin
+        run: pdm export --prod -f requirements | pdm run safety check --stdin
 
       # build
       - name: build docs
-        run: mkdocs build -d public
+        run: pdm run mkdocs build -d public
       - name: build distribution
         run: pdm build
 
