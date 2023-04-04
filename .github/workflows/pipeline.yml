@@ -1,0 +1,27 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  CI:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        python: ['3.10', '3.11']
+        
+    steps:
+      # setup
+      - uses: actions/checkout@v3
+      - uses: pdm-project/setup-pdm@v3
+        with:
+          python-version: ${{ matrix.python }}
+      - name: install dependencies
+        run: pdm install
+
+      # test
+      - name: unit test
+        run: pytest tests
