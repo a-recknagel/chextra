@@ -1,13 +1,18 @@
-name: CI/CD
+name: pipeline
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  CI:
+  toolchain:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -19,9 +24,65 @@ jobs:
       - uses: pdm-project/setup-pdm@v3
         with:
           python-version: ${{ matrix.python }}
+          enable-pep582: true
       - name: install dependencies
         run: pdm install
 
+      # lint
+      - name: format imports
+        run: pdm run isort src tests --check
+      - name: format code
+        run: pdm run black src tests --check
+
       # test
       - name: unit test
-        run: pytest tests
+        run: pdm run pytest tests
+      - name: static typing
+        run: pdm run mypy src
+
+      # security
+      - name: source code vulnerabilities
+        run: pdm run bandit -r src
+      - name: 3rd party vulnerabilities
+        run: pdm export --prod -f requirements | pdm run safety check --stdin
+
+      # build
+      - name: build docs
+        run: pdm run mkdocs build -d public
+      - name: build distribution
+        run: pdm build
+
+      # keep artifacts for publish or debugging
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.python }}-artifacts
+          path: |
+            public/
+            dist/
+            pdm.lock
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [toolchain]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    steps:
+      # publish pages, surprisingly complex
+      - uses: actions/checkout@v3
+      - uses: actions/configure-pages@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: 3.10-artifacts  # just one set is enough
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: site/
+      - name: deploy github pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+      # publish distribution to pypi
+      - uses: pdm-project/setup-pdm@v3
+      - name: publish package
+        run: pdm publish --no-build -u arne -P ${{ secrets.PYPI_PW }}
