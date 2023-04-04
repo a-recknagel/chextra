@@ -48,18 +48,23 @@ jobs:
 
       # build
       - name: build docs
-        run: pdm run mkdocs build -d public
+        run: pdm run mkdocs build
       - name: build distribution
         run: pdm build
 
       # keep artifacts for publish or debugging
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.python }}-artifacts
-          path: |
-            public/
-            dist/
-            pdm.lock
+          name: ${{ matrix.python }}-build
+          path: pdm.lock
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: site/
+      - uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: dist/
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -74,7 +79,8 @@ jobs:
       - uses: actions/configure-pages@v3
       - uses: actions/download-artifact@v3
         with:
-          name: 3.10-artifacts  # just one set is enough
+          name: docs
+          path: site/
       - uses: actions/upload-pages-artifact@v1
         with:
           path: site/
