@@ -1,0 +1,16 @@
+# dev
+.pdm.toml
+.idea
+.venv
+pdm.lock
+
+# tool artifacts
+.mypy_cache
+.pytest_cache
+.coverage
+**/__pycache__
+
+# build directories
+dist
+build
+site
