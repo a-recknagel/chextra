@@ -1,6 +1,11 @@
-# **che**[eck-e]**xtra** 🔎
+# **che**[ck-e]**xtra** 🔎
 
-[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
+[![python](https://img.shields.io/pypi/pyversions/chextra)](https://pdm.fming.dev)
+[![pyPI](https://img.shields.io/pypi/v/chextra)](https://pypi.org/project/chextra)
+[![docs](https://img.shields.io/badge/doc-pages-blue)](https://a-recknagel.github.io/chextra/)
+[![pdm-managed](https://img.shields.io/badge/packaging-pdm-blueviolet)](https://pdm.fming.dev)
+[![license](https://img.shields.io/pypi/l/chextra)](https://github.com/a-recknagel/chextra/blob/main/LICENSE)
+[![chat](https://img.shields.io/badge/chat-gitter-mediumturquoise)](https://matrix.to/#/#chextra:gitter.im)
 
 When you're writing a python library, being able to define [extras][1] is 
 sweet. People who are either new to programming in general or python's
@@ -14,7 +19,7 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'foo'
 ```
 
-Instead of letting them assume that you shipped them a broken distribution.
+instead of letting them assume that you shipped them a broken distribution.
 
 ## Usage
 
