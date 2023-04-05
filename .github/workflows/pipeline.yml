@@ -17,8 +17,8 @@ jobs:
     strategy:
       matrix:
         python: ['3.10', '3.11']
-        
     steps:
+
       # setup
       - uses: actions/checkout@v3
       - uses: pdm-project/setup-pdm@v3
@@ -36,7 +36,7 @@ jobs:
 
       # test
       - name: unit test
-        run: pdm run pytest tests
+        run: pdm run pytest tests --cov
       - name: static typing
         run: pdm run mypy src
 
@@ -74,6 +74,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-22.04
     steps:
+
       # publish pages, surprisingly complex
       - uses: actions/checkout@v3
       - uses: actions/configure-pages@v3
@@ -90,5 +91,9 @@ jobs:
 
       # publish distribution to pypi
       - uses: pdm-project/setup-pdm@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: distribution
+          path: dist/
       - name: publish package
         run: pdm publish --no-build -u arne -P ${{ secrets.PYPI_PW }}

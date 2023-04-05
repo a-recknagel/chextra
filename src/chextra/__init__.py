@@ -12,9 +12,11 @@ import importlib.resources
 import inspect
 import re
 import warnings
+from importlib import metadata
 
 from packaging.requirements import Requirement
 
+__version__ = metadata.version("chextra")
 __all__ = ["warn"]
 
 
@@ -32,7 +34,7 @@ def dependencies_grouped_by_extra(pkg: str) -> dict[str, list[str]]:
         pkg: Name of the inspected distribution.
 
     Returns:
-        All dependencies of the supplied distribution grouped by their extras, or `""` if
+        All dependencies of the supplied distribution grouped by their extra, or `""` if
             they have none.
 
     Raises:
@@ -64,7 +66,7 @@ def _normalize_extra(extra):
 
 
 def _call_path(*, level: int) -> list[str]:
-    """Look at the callstack's level, and pick out the calling module's name."""
+    """Look at the callstack's level and pick out the calling module's name."""
     call_stack = inspect.stack()
     call_frame = call_stack[level][0]
     module = inspect.getmodule(call_frame)
@@ -79,9 +81,9 @@ def warn(
     *,
     eager: bool = False,
 ):
-    """Raise a Warning if a user imports a package relying on uninstalled extras.
+    """Raise a `Warning` if a user imports a package relying on uninstalled extras.
 
-    Call this function in the `__init__.py` of a subpackage which contains code that
+    Call this function in the `__init__.py` of a sub-package which contains code that
     relies on an extra being installed. In order to be reachable, it must be executed
     before any third party package imports take place. Any subsecuent `ImportError`s will
     still be raised, the warning merely tries to give users a hint why their code might be
@@ -115,7 +117,7 @@ def warn(
     ```
 
     If `eager` were set to `True`, the first line would have raised an ImportError for
-    "baz" already.
+    `baz` already.
 
     In this particular example, it would also be possible to call `chextra.warn`
     without any parameters:
@@ -127,7 +129,7 @@ def warn(
 
     By inspecting the callstack, guessing the distribution name is under normal
     circumstances straight forward. For the name of the extra, it is not unusual to
-    call the subpackage the same as the extra, so that name can be guessed from the
+    call the sub-package the same as the extra, so that name can be guessed from the
     context here as well. It is safe to use when your package was installed properly,
     but might be a hassle if your dev-environment or test setup executes your files
     directly instead.
@@ -136,7 +138,7 @@ def warn(
         pkg: Name of the installable distribution.
         extras: Name of the extra this call should be guarding against. Can specify
             multiple as a list.
-        eager: Iff `True`, raise in ImportError immediately listing missing 3rd party
+        eager: If set to `True`, manually raise an ImportError listing missing 3rd party
             packages.
     """
     # get all prerequisites in order
@@ -164,7 +166,6 @@ def warn(
         try:
             dependencies = {*dependency_groups[extra]}
         except KeyError:
-            # you're running a library as a script?
             raise ValueError(
                 f"{extra=} couldn't be resolved from those collected: "
                 f"{[k for k in dependency_groups if k]}."

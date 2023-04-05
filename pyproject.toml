@@ -1,14 +1,31 @@
 [project]
 name = "chextra"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
-description = "Arm your library with a simple warning-call if users try to make use of uninstalled extras."
 authors = [{name = "Arne Caratti", email = "arne.recknagel@hotmail.com"}]
+maintainers = [{name = "Arne Caratti", email = "arne.recknagel@hotmail.com"}]
+description = "Arm your library with a simple warning-call if users try to make use of uninstalled extras."
+keywords = ["extra", "extras", "warning", "metadata"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Typing :: Typed",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+]
 dependencies = [
     "packaging>=23.0",
 ]
+[project.urls]
+documentation = "https://a-recknagel.github.io/chextra/"
+repository = "https://github.com/a-recknagel/chextra"
+
+[build-system]
+requires = ["pdm-pep517>=1.0"]
+build-backend = "pdm.pep517.api"
 
 [tool.pdm.dev-dependencies]
 docs = [
@@ -31,10 +48,6 @@ security = [
     "safety>=2.3.4",
 ]
 
-[build-system]
-requires = ["pdm-pep517>=1.0"]
-build-backend = "pdm.pep517.api"
-
 [tool.black]
 line-length = 90
 
@@ -50,7 +63,6 @@ source = ["chextra"]
 source = ["src"]
 
 [tool.coverage.report]
-fail_under = 0
 show_missing = true
 
 [tool.mypy]
