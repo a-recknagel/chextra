@@ -96,4 +96,4 @@ jobs:
           name: distribution
           path: dist/
       - name: publish package
-        run: pdm publish --no-build -u arne -P ${{ secrets.PYPI_PW }}
+        run: pdm publish --no-build -u __token__ -P ${{ secrets.PYPI_TOKEN }}
